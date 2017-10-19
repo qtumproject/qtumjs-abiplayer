@@ -6,6 +6,8 @@ import { render } from "react-dom"
 
 import { App } from "./views/App"
 
+window.Buffer = require("buffer").Buffer
+
 window.addEventListener("load", () => {
   render(<App />, document.getElementById("root"))
 })

@@ -1,6 +1,9 @@
+import { Contract, QtumRPC } from "qtumjs"
 import * as React from "react"
 
-const devContracts = require("../../solar.development.json")
+const rpc = new QtumRPC("http://localhost:9888")
+// const devContracts = require("../../solar.development.json")
+const devContracts = {}
 
 interface IState {
   contracts: IContractsMap
@@ -53,39 +56,94 @@ export class App extends React.Component<IProp, IState> {
     )
   }
 
+  private quickConfirm = () => {
+    rpc.rawCall("")
+  }
+
   private renderContract(contract: IContract) {
     const methods = contract.abi.filter((method: any) => method.name !== "")
+
+    const qContract = new Contract(rpc, contract)
 
     if (methods.length === 0) {
       return "contract has no method"
     }
 
-    const inputFields = methods.map((method: any) => {
+    const methodForms = methods.map((method: any) => {
       const {
         name,
         inputs,
       } = method
 
-      return inputs.map((arg: any) => {
+      const params: any[] = []
+
+      let i = 0
+      const inputFields = inputs.map((arg: any) => {
+        i++
+        const j = i - 1
         return (
           <p key={arg.name}>
             <label>{arg.name}</label>
-            <input />
+            <input onChange={(e) => {
+              params[j] = e.target.value
+            }} />
           </p>
         )
       })
+
+      return (
+        <div style={{ border: "1px solid black", margin: "10px", padding: "10px" }}>
+          <h3>{method.name}</h3>
+          {inputFields}
+          <button onClick={async () => {
+            const calldata = qContract.encodeParams(method.name, params)
+
+            console.log("call", method.name, params)
+            console.log("abi call data", calldata)
+
+            const result = await qContract.call(method.name, params)
+
+            console.log("result", result)
+          }}>Call</button>
+          {!method.constant &&
+            <button onClick={async () => {
+              const calldata = qContract.encodeParams(method.name, params)
+              console.log("send", method.name, params)
+              console.log("abi call data", calldata)
+
+              const receipt = await qContract.send(method.name, params)
+              console.log("txid", receipt.txid)
+              while (true) {
+                console.log("check confirmation")
+                if (await receipt.check(1)) {
+                  break
+                }
+
+                await sleep(1000)
+              }
+              console.log("confirmed send", method.name)
+            }}>Send</button>
+          }
+        </div>
+      )
     })
 
     return (
       <div>
-        <h3> {contract.deployName} ({contract.name}) </h3>
-        {inputFields}
-
-        <button>Call</button>
-
-        <button>Send</button>
+        <h2> {contract.deployName} ({contract.name}) </h2>
+        {methodForms}
       </div>
     )
+  }
+
+  private onInputChange(i: number, e: any) {
+    const value = e.target.value
+
+    const params = this.state.params.slice(0)
+    params[i] = value
+    this.setState({
+      params,
+    })
   }
 
   private renderContracts(contracts: IContractsMap) {
@@ -162,4 +220,10 @@ async function readFile(f: File): Promise<string> {
   r.readAsText(f)
 
   return p
+}
+
+async function sleep(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
 }
