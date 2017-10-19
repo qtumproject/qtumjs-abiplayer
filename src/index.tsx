@@ -4,4 +4,9 @@ import "./index.css"
 import * as React from "react"
 import { render } from "react-dom"
 
-render(<h1>Hello React TypeScript!</h1>, document.getElementById("root"))
+import { App } from "./views/App"
+
+window.addEventListener("load", () => {
+  render(<App />, document.getElementById("root"))
+})
+
