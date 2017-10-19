@@ -136,16 +136,6 @@ export class App extends React.Component<IProp, IState> {
     )
   }
 
-  private onInputChange(i: number, e: any) {
-    const value = e.target.value
-
-    const params = this.state.params.slice(0)
-    params[i] = value
-    this.setState({
-      params,
-    })
-  }
-
   private renderContracts(contracts: IContractsMap) {
     return (
       <ul>

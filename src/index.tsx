@@ -6,9 +6,11 @@ import { render } from "react-dom"
 
 import { App } from "./views/App"
 
-window.Buffer = require("buffer").Buffer
+const { Buffer } = require("buffer")
+Object.assign(window, {
+  Buffer,
+})
 
 window.addEventListener("load", () => {
   render(<App />, document.getElementById("root"))
 })
-
