@@ -18,6 +18,7 @@
     "@types/react": "^16.0.9",
     "@types/react-dom": "^16.0.0",
     "buffer": "^5.0.8",
+    "bulma": "^0.6.0",
     "normalize.css": "^7.0.0",
     "qtumjs": "^1.0.0",
     "react": "^16.0.0",
