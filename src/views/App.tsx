@@ -2,8 +2,14 @@ import { Contract, QtumRPC } from "qtumjs"
 import * as React from "react"
 
 const rpc = new QtumRPC("http://localhost:9888")
-// const devContracts = require("../../solar.development.json")
-const devContracts = {}
+const devContracts = require("../../solar.development.json")
+// const devContracts = {}
+
+const css = require("./App.css")
+
+import { ChooseFile } from "./ChooseFile"
+import { ContractsList } from "./ContractsList"
+
 
 interface IState {
   contracts: IContractsMap
@@ -38,20 +44,61 @@ export class App extends React.Component<IProp, IState> {
       contracts,
       selectedContract,
     } = this.state
+
+    const contractsArray = Object.keys(contracts).map((key) => contracts[key])
+
     return (
       <div>
-        <div className="filedropper"
+        <nav className="navbar" role="navigation">
+          <div className="navbar-brand">
+            <span className="navbar-item">
+              QTUM ABI Explorer
+            </span>
+          </div>
+        </nav>
+
+        <div className={`container ${css.main}`} >
+          <div className="columns">
+            <div className="column">
+
+              <p className="content">
+                <h3>Deployed Contracts</h3>
+                <ChooseFile />
+              </p>
+
+              <ContractsList contracts={contractsArray} />
+            </div>
+
+            <div className="column">
+              <div className="box">
+                Transaction 1
+            </div>
+
+              <div className="box">
+                Transaction 2
+            </div>
+
+              <div className="box">
+                Transaction 3
+            </div>
+            </div>
+          </div>
+
+          {/* <div className="filedropper"
           onDragOver={this.onDragOver.bind(this)}
           onDrop={this.onDrop.bind(this)}>
 
           <input type="file" onChange={this.onFileInputChange} />
-        </div>
+        </div> */}
 
-        <div>
+
+
+          {/* <div>
           {this.renderContracts(contracts)}
-        </div>
+        </div> */}
 
-        {selectedContract && this.renderContract(selectedContract)}
+          {selectedContract && this.renderContract(selectedContract)}
+        </div>
       </div>
     )
   }
@@ -136,27 +183,27 @@ export class App extends React.Component<IProp, IState> {
     )
   }
 
-  private renderContracts(contracts: IContractsMap) {
-    return (
-      <ul>
-        {Object.keys(contracts).map((key) => {
-          const contract = contracts[key]
-          const {
-            name,
-            deployName,
-            address,
-          } = contract
-          return (
-            <li key={key}>
-              <a href="#" onClick={() => this.chooseContract(contract)}>
-                {deployName} ({name}) => {address}
-              </a>
-            </li>
-          )
-        })}
-      </ul>
-    )
-  }
+  // private renderContracts(contracts: IContractsMap) {
+  //   return (
+  //     <ul>
+  //       {Object.keys(contracts).map((key) => {
+  //         const contract = contracts[key]
+  //         const {
+  //           name,
+  //           deployName,
+  //           address,
+  //         } = contract
+  //         return (
+  //           <li key={key}>
+  //             <a href="#" onClick={() => this.chooseContract(contract)}>
+  //               {deployName} ({name}) => {address}
+  //             </a>
+  //           </li>
+  //         )
+  //       })}
+  //     </ul>
+  //   )
+  // }
 
   private chooseContract = (contract: IContract) => {
     this.setState({

@@ -1,4 +1,6 @@
-import "normalize.css"
+import "bulma/css/bulma.css"
+// import "normalize.css"
+
 import "./index.css"
 
 import * as React from "react"
