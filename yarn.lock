@@ -4423,9 +4423,9 @@ qs@~6.4.0:
   version "6.4.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.4.0.tgz#13e26d28ad6b0ffaa91312cd3bf708ed351e7233"
 
-qtumjs@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/qtumjs/-/qtumjs-1.0.1.tgz#31b5ebc58c253d45c03fcd8a5efa04f257784632"
+qtumjs@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/qtumjs/-/qtumjs-1.1.0.tgz#6954070969373cbc39711e50e2504f74ba1a3862"
   dependencies:
     "@types/isomorphic-fetch" "^0.0.34"
     btoa "^1.1.2"
