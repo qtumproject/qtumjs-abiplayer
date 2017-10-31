@@ -3,7 +3,7 @@ html, body {
   width: 100%;
 }
 
-body {
+body, #root {
   background: #f0f0f0;
   font-family: "Lato";
 }

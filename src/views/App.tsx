@@ -2,50 +2,41 @@ import { Contract, QtumRPC } from "qtumjs"
 import * as React from "react"
 
 const rpc = new QtumRPC("http://localhost:9888")
-const devContracts = require("../../solar.development.json")
-// const devContracts = {}
 
 const css = require("./App.css")
 
+import { IContract, IContractsInventory } from "../types"
 import { ChooseFile } from "./ChooseFile"
 import { ContractsList } from "./ContractsList"
+import { Modal } from "./Modal"
 
 
 interface IState {
-  contracts: IContractsMap
   selectedContract?: IContract
 }
 
 // tslint:disable-next-line:no-empty-interface
 interface IProp { }
 
-interface IContract {
-  name: string
-  deployName: string
-  address: string
-  abi: any
-}
-
-interface IContractsMap {
-  [key: string]: IContract
-}
-
 export class App extends React.Component<IProp, IState> {
   constructor(props: IProp) {
     super(props)
 
     this.state = {
-      contracts: devContracts,
     }
   }
 
   public render() {
     const {
-      contracts,
       selectedContract,
     } = this.state
 
-    const contractsArray = Object.keys(contracts).map((key) => contracts[key])
+    const showModal = false
+
+    // Components with store injected
+    const ChooseFile_: any = ChooseFile
+    const ContractsList_: any = ContractsList
+    const Modal_: any = Modal
 
     return (
       <div>
@@ -63,10 +54,10 @@ export class App extends React.Component<IProp, IState> {
 
               <p className="content">
                 <h3>Deployed Contracts</h3>
-                <ChooseFile />
+                <ChooseFile_ />
               </p>
 
-              <ContractsList contracts={contractsArray} />
+              <ContractsList_ />
             </div>
 
             <div className="column">
@@ -83,6 +74,8 @@ export class App extends React.Component<IProp, IState> {
             </div>
             </div>
           </div>
+
+          <Modal_ />
 
           {/* <div className="filedropper"
           onDragOver={this.onDragOver.bind(this)}
@@ -118,7 +111,7 @@ export class App extends React.Component<IProp, IState> {
 
     const methodForms = methods.map((method: any) => {
       const {
-        name,
+          name,
         inputs,
       } = method
 
@@ -205,58 +198,38 @@ export class App extends React.Component<IProp, IState> {
   //   )
   // }
 
-  private chooseContract = (contract: IContract) => {
-    this.setState({
-      selectedContract: contract,
-    })
-  }
+  // private chooseContract = (contract: IContract) => {
+  //   this.setState({
+  //     selectedContract: contract,
+  //   })
+  // }
 
-  private onFileInputChange = async (e: any) => {
-    const files: FileList = e.target.files
-    const content = await readFile(files[0])
-    this.setState({
-      contracts: JSON.parse(content),
-    })
-  }
+  // private onFileInputChange = async (e: string) => {
+  //   const files: FileList = e.target.files
+  //   const content = await readFile(files[0])
+  //   this.setState({
+  //     contracts: JSON.parse(content),
+  //   })
+  // }
 
   private onDragOver(e: any) {
     e.preventDefault()
   }
 
-  private async onDrop(e: DragEvent) {
-    e.preventDefault()
+  // private async onDrop(e: DragEvent) {
+  //   e.preventDefault()
 
-    // console.log("drop", e)
+  //   // console.log("drop", e)
 
-    const files = e.dataTransfer.files
-    const f = files[0]
-    console.log("open", f.name)
+  //   const files = e.dataTransfer.files
+  //   const f = files[0]
+  //   console.log("open", f.name)
 
-    const content = await readFile(f)
-    this.setState({
-      contracts: JSON.parse(content),
-    })
-
-
-  }
-}
-
-async function readFile(f: File): Promise<string> {
-  // TODO handle error
-  const r = new FileReader()
-  const p = new Promise<string>((resolve) => {
-    r.addEventListener("loadend", (e) => {
-      // resolve(e.target.)
-      resolve(r.result)
-    })
-
-    r.addEventListener("error", (e) => {
-      console.log("read error", e)
-    })
-  })
-  r.readAsText(f)
-
-  return p
+  //   const content = await readFile(f)
+  //   this.setState({
+  //     contracts: JSON.parse(content),
+  //   })
+  // }
 }
 
 async function sleep(ms: number) {

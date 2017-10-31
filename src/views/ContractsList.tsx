@@ -1,71 +1,28 @@
-import { IABI } from "qtumjs"
+import { inject, observer } from "mobx-react"
+import { IABIMethod } from "qtumjs"
 import * as React from "react"
 
-const css = require("./ContractsList.css")
+import { Store } from "../Store"
+import { ContractItem } from "./ContractItem"
 
-interface IContract {
-  name: string
-  deployName: string
-  address: string
-  abi: IABI[]
-}
+@inject("store") @observer
+export class ContractsList extends React.Component<{ store: Store }, {}> {
+  public render() {
+    const {
+      contracts,
+      showModal,
+    } = this.props.store
 
-interface IContractsMap {
-  [key: string]: IContract
-}
-
-function Contract(props: { contract: IContract }) {
-  const {
-    name,
-    deployName,
-    address,
-    abi,
-  } = props.contract
-
-  const methods = abi.filter((method) => method.name !== "")
-
-  const noMethod = methods.length === 0
-
-  return (
-    <div className="box content">
-      <p>
-        <strong>{deployName}</strong> {name}
-        <br />
-        <span className={css.address}>{address}</span>
-      </p>
-
-      <p>
-        {noMethod && "Contract has no method"}
-
+    return (
+      <div>
         {
-          methods.map((method) => {
-            const {
-              name: methodName,
-              constant,
-            } = method
-
-            const buttonType = constant ? "is-light" : "is-link"
-
-            return (
-              <a className={`button ${buttonType} ${css.methodButton}`}>{methodName}</a>
-            )
-          })
+          contracts.map((contract) => <ContractItem
+            key={contract.deployName}
+            contract={contract}
+            store={this.props.store} />)
         }
-      </p>
-    </div>
-  )
-}
+      </div>
+    )
+  }
 
-export function ContractsList(props: { contracts: IContract[] }) {
-  const {
-    contracts,
-  } = props
-
-  return (
-    <div>
-      {
-        contracts.map((contract) => <Contract key={contract.deployName} contract={contract} />)
-      }
-    </div>
-  )
 }

@@ -6,6 +6,7 @@
     "jsRules": {},
     "rules": {
         "no-console": false,
+        "no-var-requires": false,
         "semicolon": [
             true,
             "never"
@@ -13,7 +14,9 @@
         "object-literal-sort-keys": false,
         "variable-name": [
             true,
-            "allow-leading-underscore"
+            "allow-leading-underscore",
+            "allow-pascal-case",
+            "allow-trailing-underscore"
         ]
     },
     "rulesDirectory": []
