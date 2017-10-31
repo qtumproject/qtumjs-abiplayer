@@ -10,7 +10,6 @@ import { ChooseFile } from "./ChooseFile"
 import { ContractsList } from "./ContractsList"
 import { Modal } from "./Modal"
 
-
 interface IState {
   selectedContract?: IContract
 }
@@ -83,8 +82,6 @@ export class App extends React.Component<IProp, IState> {
 
           <input type="file" onChange={this.onFileInputChange} />
         </div> */}
-
-
 
           {/* <div>
           {this.renderContracts(contracts)}
@@ -196,20 +193,6 @@ export class App extends React.Component<IProp, IState> {
   //       })}
   //     </ul>
   //   )
-  // }
-
-  // private chooseContract = (contract: IContract) => {
-  //   this.setState({
-  //     selectedContract: contract,
-  //   })
-  // }
-
-  // private onFileInputChange = async (e: string) => {
-  //   const files: FileList = e.target.files
-  //   const content = await readFile(files[0])
-  //   this.setState({
-  //     contracts: JSON.parse(content),
-  //   })
   // }
 
   private onDragOver(e: any) {
