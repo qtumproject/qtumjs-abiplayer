@@ -1,0 +1,6 @@
+:local .calldata {
+  display: block;
+  /* overflow: scroll; */
+  white-space: pre-wrap;
+  word-break: break-all;
+}

@@ -34,8 +34,8 @@ async function readContractsInventory(file: File): Promise<IContractsInventory> 
 export class Store {
   @observable public ui: IUIState = {}
   @observable public contractsInventoryJSONFile?: File
-  @observable public inventory: IContractsInventory = {}
-  @observable public modalRenderFunction?: ModalRenderFunction
+  @observable.ref public inventory: IContractsInventory = {}
+  @observable.ref public modalRenderFunction?: ModalRenderFunction
 
   @computed
   public get contracts(): IContract[] {

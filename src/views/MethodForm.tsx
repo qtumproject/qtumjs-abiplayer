@@ -6,6 +6,8 @@ import * as React from "react"
 import { IContract } from "../types"
 import { MethodFormStore } from "./MethodFormStore"
 
+const css = require("./MethodForm.css")
+
 function MethodParam(props: {
   method: IABIMethod,
 }) {
@@ -34,13 +36,8 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
   constructor(props: IMethodFormProps) {
     super(props)
 
-    const store = new MethodFormStore()
-
-    autorun(() => {
-      console.log("inputs", JSON.stringify(toJS(store.inputs), null, 2))
-    })
-
-    this.store = store // new MethodFormStore()
+    const store = new MethodFormStore(props.method)
+    this.store = store
   }
 
   public render() {
@@ -55,6 +52,11 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
       payable,
       constant,
     } = this.props.method
+
+    const {
+      calldataEncodeError,
+      showCalldataPreview,
+    } = this.store
 
     return (
       <div className="box content">
@@ -86,7 +88,6 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
             </div>
           }
 
-
           {this.props.method.inputs.map((arg) => {
             return (
               <div key={arg.name} className="field">
@@ -102,17 +103,40 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
             )
           })}
 
-          <p>
-            <a href="#">Preview Call Data</a>
-          </p>
+          <div>
+            {calldataEncodeError &&
+              <span className="has-text-danger">
+                {calldataEncodeError.message}
+              </span>
+            }
+
+            {!calldataEncodeError &&
+              <div>
+                <button className="button is-text"
+                  onClick={this.store.toggleCalldataPreview}>
+                  Toggle Call Data Preview
+                </button>
+
+                {showCalldataPreview &&
+                  <code className={`has-text-grey ${css.calldata}`}>{this.store.encodedABIcalldata}
+                  </code>
+                }
+
+              </div>
+            }
+          </div>
 
           <hr />
 
           <p>
             <span className="is-pulled-right is-size-7">
-              Free read-only computation
+              Free local simulated computation
             </span>
-            <a className="button is-medium is-fullwidth">Call</a>
+            <button className="button is-medium is-fullwidth"
+              disabled={!!calldataEncodeError}
+            >
+              Call
+            </button>
           </p>
 
           {
@@ -121,7 +145,11 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
               <span className="is-pulled-right is-size-7">
                 Create a transaction for global consensus
               </span>
-              <a className="button is-medium is-success is-fullwidth">Send</a>
+              <button className="button is-medium is-success is-fullwidth"
+                disabled={!!calldataEncodeError}
+              >
+                Send
+              </button>
             </p>
           }
         </div>
