@@ -1,6 +1,11 @@
-import { computed, observable } from "mobx"
+import { autorun, computed, observable, toJS } from "mobx"
 
-import { Contract, IContractInfo, QtumRPC } from "qtumjs"
+import {
+  Contract,
+  IContractCallDecodedResult,
+  IContractInfo,
+  QtumRPC,
+} from "qtumjs"
 
 import { IContractsInventory } from "./types"
 
@@ -33,14 +38,32 @@ async function readContractsInventory(file: File): Promise<IContractsInventory> 
   return JSON.parse(content)
 }
 
-// FIXME
+// FIXME make this user configurable
 const rpc = new QtumRPC("http://localhost:9888")
+// const rpc = new QtumRPC("http://localhost:13889")
+
+interface ICallLog {
+  contract: IContractInfo
+  method: string
+  args: any[]
+
+  result?: IContractCallDecodedResult
+}
 
 export class Store {
   @observable public ui: IUIState = {}
   @observable public contractsInventoryJSONFile?: File
   @observable.ref public inventory: IContractsInventory = {}
   @observable.ref public modalRenderFunction?: ModalRenderFunction
+
+  // tslint:disable-next-line:array-type
+  @observable public logs: Array<ICallLog> = []
+
+  constructor() {
+    autorun(() => {
+      console.log("logs", toJS(this.logs))
+    })
+  }
 
   @computed
   public get contracts(): IContractInfo[] {
@@ -69,4 +92,35 @@ export class Store {
     console.log("hide modal")
     this.modalRenderFunction = undefined
   }
+
+  public rpcCall = async (contract: IContractInfo, method: string, args: any[]) => {
+    const c = new Contract(rpc, contract)
+
+    const calllog: ICallLog = observable({
+      contract,
+      method,
+      args,
+    })
+
+    const result = await c.call(method, args)
+    calllog.result = result
+
+    this.logs.unshift(calllog)
+  }
+
+  //             const calldata = qContract.encodeParams(method.name, params)
+  //             console.log("send", method.name, params)
+  //             console.log("abi call data", calldata)
+
+  //             const receipt = await qContract.send(method.name, params)
+  //             console.log("txid", receipt.txid)
+  //             while (true) {
+  //               console.log("check confirmation")
+  //               if (await receipt.check(1)) {
+  //                 break
+  //               }
+
+  //               await sleep(1000)
+  //             }
+  //             console.log("confirmed send", method.name)
 }

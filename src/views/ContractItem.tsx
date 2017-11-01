@@ -26,6 +26,8 @@ export const ContractItem = observer((props: {
 
   const noMethod = methods.length === 0
 
+  const MethodForm_: any = MethodForm
+
   return (
     <div className="box content">
       <p>
@@ -51,7 +53,7 @@ export const ContractItem = observer((props: {
                 onClick={() => {
                   store.showModal(() => {
                     return (
-                      <MethodForm contract={props.contract} method={method} />
+                      <MethodForm_ contract={props.contract} method={method} />
                     )
                   })
                 }}>

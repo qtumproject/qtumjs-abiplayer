@@ -37,7 +37,7 @@ export class MethodFormStore {
     }
   }
 
-  private get paramValues(): string[] {
+  public get paramValues(): string[] {
     return this.method.inputs.map((input) => {
       const val = this.inputs.get(input.name)
       if (val === undefined) {

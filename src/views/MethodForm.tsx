@@ -1,8 +1,9 @@
 import { autorun, toJS } from "mobx"
-import { observer } from "mobx-react"
+import { inject, observer } from "mobx-react"
 import { IABIMethod, IContractInfo } from "qtumjs"
 import * as React from "react"
 
+import { Store } from "../Store"
 import { MethodFormStore } from "./MethodFormStore"
 
 const css = require("./MethodForm.css")
@@ -26,17 +27,21 @@ function MethodParam(props: {
 interface IMethodFormProps {
   contract: IContractInfo
   method: IABIMethod
+
+  // injected store
+  store: Store,
 }
 
-@observer
+@inject("store") @observer
 export class MethodForm extends React.Component<IMethodFormProps, {}> {
-  private store: MethodFormStore
+  // local store for this component (more convenient than component state)
+  private vstore: MethodFormStore
 
   constructor(props: IMethodFormProps) {
     super(props)
 
     const store = new MethodFormStore(props.method)
-    this.store = store
+    this.vstore = store
   }
 
   public render() {
@@ -55,7 +60,12 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
     const {
       calldataEncodeError,
       showCalldataPreview,
-    } = this.store
+    } = this.vstore
+
+    const {
+      hideModal,
+      rpcCall,
+    } = this.props.store
 
     return (
       <div className="box content">
@@ -112,12 +122,12 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
             {!calldataEncodeError &&
               <div>
                 <button className="button is-text"
-                  onClick={this.store.toggleCalldataPreview}>
+                  onClick={this.vstore.toggleCalldataPreview}>
                   Toggle Call Data Preview
                 </button>
 
                 {showCalldataPreview &&
-                  <code className={`has-text-grey ${css.calldata}`}>{this.store.encodedABIcalldata}
+                  <code className={`has-text-grey ${css.calldata}`}>{this.vstore.encodedABIcalldata}
                   </code>
                 }
 
@@ -132,6 +142,10 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
               Free local simulated computation
             </span>
             <button className="button is-medium is-fullwidth"
+              onClick={() => {
+                rpcCall(this.props.contract, methodName, this.vstore.paramValues)
+                hideModal()
+              }}
               disabled={!!calldataEncodeError}
             >
               Call
@@ -162,6 +176,6 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
       value,
     } = e.target
 
-    this.store.updateInput(name, value)
+    this.vstore.updateInput(name, value)
   }
 }
