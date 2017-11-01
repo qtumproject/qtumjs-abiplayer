@@ -48,11 +48,11 @@ export const ContractItem = observer((props: {
             const buttonType = constant ? "is-light" : "is-link"
 
             return (
-              <button className={`button ${buttonType} ${css.methodButton}`}
+              <button key={methodName} className={`button ${buttonType} ${css.methodButton}`}
                 onClick={() => {
                   store.showModal(() => {
                     return (
-                      <MethodForm />
+                      <MethodForm contract={props.contract} method={method} />
                     )
                   })
                 }}>

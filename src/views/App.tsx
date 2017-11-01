@@ -51,10 +51,10 @@ export class App extends React.Component<IProp, IState> {
           <div className="columns">
             <div className="column">
 
-              <p className="content">
+              <div className="content">
                 <h3>Deployed Contracts</h3>
                 <ChooseFile_ />
-              </p>
+              </div>
 
               <ContractsList_ />
             </div>
