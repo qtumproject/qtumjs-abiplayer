@@ -1,9 +1,8 @@
 import { autorun, toJS } from "mobx"
 import { observer } from "mobx-react"
-import { IABIMethod } from "qtumjs"
+import { IABIMethod, IContractInfo } from "qtumjs"
 import * as React from "react"
 
-import { IContract } from "../types"
 import { MethodFormStore } from "./MethodFormStore"
 
 const css = require("./MethodForm.css")
@@ -25,7 +24,7 @@ function MethodParam(props: {
 }
 
 interface IMethodFormProps {
-  contract: IContract
+  contract: IContractInfo
   method: IABIMethod
 }
 

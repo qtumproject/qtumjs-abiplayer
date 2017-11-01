@@ -1,12 +1,5 @@
-import { IABIMethod } from "qtumjs"
-
-export interface IContract {
-  name: string
-  deployName: string
-  address: string
-  abi: IABIMethod[]
-}
+import { IABIMethod, IContractInfo } from "qtumjs"
 
 export interface IContractsInventory {
-  [key: string]: IContract
+  [key: string]: IContractInfo
 }

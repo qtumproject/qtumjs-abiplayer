@@ -1,17 +1,15 @@
-import { Contract, QtumRPC } from "qtumjs"
+import { Contract, IContractInfo, QtumRPC } from "qtumjs"
 import * as React from "react"
-
-const rpc = new QtumRPC("http://localhost:9888")
 
 const css = require("./App.css")
 
-import { IContract, IContractsInventory } from "../types"
+import { IContractsInventory } from "../types"
 import { ChooseFile } from "./ChooseFile"
 import { ContractsList } from "./ContractsList"
 import { Modal } from "./Modal"
 
 interface IState {
-  selectedContract?: IContract
+  selectedContract?: IContractInfo
 }
 
 // tslint:disable-next-line:no-empty-interface
@@ -97,7 +95,7 @@ export class App extends React.Component<IProp, IState> {
     rpc.rawCall("")
   }
 
-  private renderContract(contract: IContract) {
+  private renderContract(contract: IContractInfo) {
     const methods = contract.abi.filter((method: any) => method.name !== "")
 
     const qContract = new Contract(rpc, contract)

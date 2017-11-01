@@ -1,6 +1,8 @@
 import { computed, observable } from "mobx"
 
-import { IContract, IContractsInventory } from "./types"
+import { Contract, IContractInfo, QtumRPC } from "qtumjs"
+
+import { IContractsInventory } from "./types"
 
 interface IUIState {
   modalRenderFunction?: () => any,
@@ -31,6 +33,9 @@ async function readContractsInventory(file: File): Promise<IContractsInventory> 
   return JSON.parse(content)
 }
 
+// FIXME
+const rpc = new QtumRPC("http://localhost:9888")
+
 export class Store {
   @observable public ui: IUIState = {}
   @observable public contractsInventoryJSONFile?: File
@@ -38,7 +43,7 @@ export class Store {
   @observable.ref public modalRenderFunction?: ModalRenderFunction
 
   @computed
-  public get contracts(): IContract[] {
+  public get contracts(): IContractInfo[] {
     return Object.keys(this.inventory).map((key) => this.inventory[key])
   }
 
