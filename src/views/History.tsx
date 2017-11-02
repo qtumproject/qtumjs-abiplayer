@@ -4,6 +4,7 @@ import { inject, observer } from "mobx-react"
 import * as React from "react"
 
 import { Store } from "../Store"
+import { CallRPCLog } from "./CallRPCLog"
 
 @inject("store") @observer
 export class History extends React.Component<{
@@ -17,23 +18,11 @@ export class History extends React.Component<{
 
     return (
       <div>
-        <div className="box">
-          {logs.map((log) => {
-            const {
-              method,
-            } = log
-            return (
-              <div>
-                Call {method}
-
-                <pre><code>
-                  {JSON.stringify(toJS(log), null, 2)}
-                </code></pre>
-              </div>
-            )
-
-          })}
-        </div>
+        {logs.map((log) => {
+          return (
+            <CallRPCLog calllog={log} />
+          )
+        })}
       </div>
     )
   }

@@ -42,12 +42,11 @@ async function readContractsInventory(file: File): Promise<IContractsInventory> 
 const rpc = new QtumRPC("http://localhost:9888")
 // const rpc = new QtumRPC("http://localhost:13889")
 
-interface ICallLog {
+export interface ICallLog {
   contract: IContractInfo
   method: string
   args: any[]
-
-  result?: IContractCallDecodedResult
+  result: IContractCallDecodedResult
 }
 
 export class Store {
@@ -96,17 +95,20 @@ export class Store {
   public rpcCall = async (contract: IContractInfo, method: string, args: any[]) => {
     const c = new Contract(rpc, contract)
 
-    const calllog: ICallLog = observable({
+    const result = await c.call(method, args)
+
+    const calllog: ICallLog = {
       contract,
       method,
       args,
-    })
-
-    const result = await c.call(method, args)
-    calllog.result = result
+      result,
+    }
 
     this.logs.unshift(calllog)
   }
+
+  // public rpcSend = (contract: IContractInfo, method: string, args: any[]) => {
+  // }
 
   //             const calldata = qContract.encodeParams(method.name, params)
   //             console.log("send", method.name, params)
