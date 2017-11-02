@@ -19,6 +19,8 @@
     "@types/react-dom": "^16.0.0",
     "buffer": "^5.0.8",
     "bulma": "^0.6.0",
+    "copy-to-clipboard": "^3.0.8",
+    "font-awesome": "^4.7.0",
     "mobx": "^3.3.1",
     "mobx-react": "^4.3.3",
     "normalize.css": "^7.0.0",
