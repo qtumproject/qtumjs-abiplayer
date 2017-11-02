@@ -1,10 +1,10 @@
-import { autorun, toJS } from "mobx"
 import { inject, observer } from "mobx-react"
 
 import * as React from "react"
 
 import { Store } from "../Store"
 import { CallRPCLog } from "./CallRPCLog"
+import { SendRPCLog } from "./SendRPCLog"
 
 @inject("store") @observer
 export class History extends React.Component<{
@@ -18,10 +18,16 @@ export class History extends React.Component<{
 
     return (
       <div>
-        {logs.map((log) => {
-          return (
-            <CallRPCLog calllog={log} />
-          )
+        {logs.map((log, i) => {
+          if (log.type === "call") {
+            return (
+              <CallRPCLog key={i} calllog={log} />
+            )
+          } else if (log.type === "send") {
+            return (
+              <SendRPCLog key={i} sendlog={log} />
+            )
+          }
         })}
       </div>
     )

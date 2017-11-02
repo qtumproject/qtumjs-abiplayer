@@ -60,6 +60,7 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
     const {
       hideModal,
       rpcCall,
+      rpcSend,
     } = this.props.store
 
     const tags: IContractMethodHeaderTag[] = []
@@ -152,6 +153,10 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
                 Create a transaction for global consensus
               </span>
               <button className="button is-medium is-success is-fullwidth"
+                onClick={() => {
+                  rpcSend(this.props.contract, methodName, this.vstore.paramValues)
+                  hideModal()
+                }}
                 disabled={!!calldataEncodeError}
               >
                 Send

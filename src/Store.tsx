@@ -2,16 +2,15 @@ import { autorun, computed, observable, toJS } from "mobx"
 
 import {
   Contract,
+  ContractSendReceipt,
   IContractCallDecodedResult,
   IContractInfo,
+  IRPCGetTransactionResult,
+  IRPCSendToContractResult,
   QtumRPC,
 } from "qtumjs"
 
 import { IContractsInventory } from "./types"
-
-interface IUIState {
-  modalRenderFunction?: () => any,
-}
 
 export type ModalRenderFunction = () => JSX.Element
 
@@ -43,25 +42,41 @@ const rpc = new QtumRPC("http://localhost:9888")
 // const rpc = new QtumRPC("http://localhost:13889")
 
 export interface ICallLog {
+  type: "call"
   contract: IContractInfo
   method: string
   args: any[]
   result: IContractCallDecodedResult
 }
 
+export interface ISendLog {
+  type: "send"
+  // 1. req sent to authorization RPC proxy
+  contract: IContractInfo
+  method: string
+  args: any[]
+  isPendingAuthorization: boolean
+
+  // 2. req authorized sent to qtumd
+  receipt?: ContractSendReceipt
+
+  // 3. transaction confirmed
+  tx?: IRPCGetTransactionResult
+}
+
 export class Store {
-  @observable public ui: IUIState = {}
   @observable public contractsInventoryJSONFile?: File
   @observable.ref public inventory: IContractsInventory = {}
   @observable.ref public modalRenderFunction?: ModalRenderFunction
 
-  // tslint:disable-next-line:array-type
-  @observable public logs: Array<ICallLog> = []
+  @observable public logs: Array<ICallLog | ISendLog> = []
 
   constructor() {
     autorun(() => {
       console.log("logs", toJS(this.logs))
     })
+
+    this.logs.push(require("../example.sendlog.json"))
   }
 
   @computed
@@ -98,6 +113,7 @@ export class Store {
     const result = await c.call(method, args)
 
     const calllog: ICallLog = {
+      type: "call",
       contract,
       method,
       args,
@@ -107,22 +123,33 @@ export class Store {
     this.logs.unshift(calllog)
   }
 
-  // public rpcSend = (contract: IContractInfo, method: string, args: any[]) => {
-  // }
+  public rpcSend = async (contract: IContractInfo, method: string, args: any[]) => {
+    const c = new Contract(rpc, contract)
 
-  //             const calldata = qContract.encodeParams(method.name, params)
-  //             console.log("send", method.name, params)
-  //             console.log("abi call data", calldata)
+    const sendLog: ISendLog = {
+      type: "send",
+      contract,
+      method,
+      args,
+      isPendingAuthorization: true,
 
-  //             const receipt = await qContract.send(method.name, params)
-  //             console.log("txid", receipt.txid)
-  //             while (true) {
-  //               console.log("check confirmation")
-  //               if (await receipt.check(1)) {
-  //                 break
-  //               }
+      // these two properties will be set asynchronously
+      receipt: undefined,
+      tx: undefined,
+    }
 
-  //               await sleep(1000)
-  //             }
-  //             console.log("confirmed send", method.name)
+    // when added to `logs` (an observable array), `sendlog` will be converted to an observable object
+    this.logs.unshift(sendLog)
+
+    // retrieve the mobx observable object
+    const log = this.logs[0] as ISendLog
+
+    const receipt = await c.send(method, args)
+    log.isPendingAuthorization = false
+    log.receipt = receipt
+
+    await receipt.confirm(3, 3000, (newTx) => {
+      log.tx = newTx
+    })
+  }
 }
