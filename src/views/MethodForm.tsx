@@ -5,6 +5,7 @@ import * as React from "react"
 
 import { Store } from "../Store"
 import { MethodFormStore } from "./MethodFormStore"
+import { ContractMethodHeader, IContractMethodHeaderTag } from "./partials/ContractMethodHeader"
 
 const css = require("./MethodForm.css")
 
@@ -46,12 +47,6 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
 
   public render() {
     const {
-      deployName,
-      name: contractName,
-      address,
-    } = this.props.contract
-
-    const {
       name: methodName,
       payable,
       constant,
@@ -67,25 +62,23 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
       rpcCall,
     } = this.props.store
 
+    const tags: IContractMethodHeaderTag[] = []
+    if (payable) {
+      tags.push({
+        label: "payable",
+        modifier: "is-success",
+      })
+    }
+
+    if (constant) {
+      tags.push({
+        label: "constant",
+      })
+    }
+
     return (
       <div className="box content">
-        <p>
-          <strong>{deployName}</strong> {contractName} <span className="tag">{methodName}</span>
-          {payable &&
-            <span className="tag is-success is-pulled-right">
-              payable
-            </span>
-          }
-
-          {constant &&
-            <span className="tag is-pulled-right">
-              constant
-            </span>
-          }
-
-          <br />
-          <span className="is-size-7">{address}</span>
-        </p>
+        <ContractMethodHeader contract={this.props.contract} method={this.props.method} tags={tags} />
 
         <div>
           {payable &&

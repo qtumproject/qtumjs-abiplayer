@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { IABIMethod, IContractInfo } from "qtumjs"
 
-export interface ITag {
+export interface IContractMethodHeaderTag {
   label: string
   modifier?: string
 }
@@ -10,7 +10,7 @@ export interface ITag {
 export function ContractMethodHeader(props: {
   contract: IContractInfo,
   method: IABIMethod,
-  tags?: ITag[],
+  tags?: IContractMethodHeaderTag[],
 }) {
 
   const {
