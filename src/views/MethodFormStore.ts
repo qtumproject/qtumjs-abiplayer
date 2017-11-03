@@ -2,9 +2,11 @@ import { computed, observable, toJS } from "mobx"
 import { encodeInputs, IABIMethod } from "qtumjs"
 
 export class MethodFormStore {
-  @observable public showCalldataPreview = false
   @observable public inputs: Map<string, string> = new Map()
   @observable.ref public method: IABIMethod
+
+  @observable public showCalldata = false
+  @observable public showSettings = false
 
   constructor(method: IABIMethod) {
     this.method = method
@@ -18,8 +20,8 @@ export class MethodFormStore {
     }
   }
 
-  public toggleCalldataPreview = () => {
-    this.showCalldataPreview = !this.showCalldataPreview
+  public toggleCalldata = () => {
+    this.showCalldata = !this.showCalldata
   }
 
   @computed

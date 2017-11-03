@@ -33,6 +33,11 @@ interface IMethodFormProps {
   store: Store,
 }
 
+function Caret(props: { showing: boolean }) {
+  const caret = props.showing ? "fa fa-caret-down" : "fa fa-caret-right"
+  return <span className={caret} />
+}
+
 @inject("store") @observer
 export class MethodForm extends React.Component<IMethodFormProps, {}> {
   // local store for this component (more convenient than component state)
@@ -54,7 +59,8 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
 
     const {
       calldataEncodeError,
-      showCalldataPreview,
+      showCalldata,
+      showSettings,
     } = this.vstore
 
     const {
@@ -115,16 +121,53 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
 
             {!calldataEncodeError &&
               <div>
-                <button className="button is-text"
-                  onClick={this.vstore.toggleCalldataPreview}>
-                  Toggle Call Data Preview
-                </button>
+                <div>
+                  <a
+                    onClick={() => {
+                      this.vstore.showSettings = !showSettings
+                    }}
+                  > <Caret showing={showSettings} /> Settings </a>
 
-                {showCalldataPreview &&
-                  <code className={`has-text-grey ${css.calldata}`}>{this.vstore.encodedABIcalldata}
-                  </code>
-                }
+                  {showSettings &&
+                    <div>
+                      <div className="field">
+                        <label className="label">Gas Price</label>
+                        <div className="control">
+                          <input className="input" type="text" placeholder="default: 0.00000001" />
+                        </div>
+                      </div>
 
+                      <div className="field">
+                        <label className="label">Gas Limit</label>
+                        <div className="control">
+                          <input className="input" type="text" placeholder="default: 200000" />
+                        </div>
+                      </div>
+
+                      <div className="field">
+                        <label className="label">Sender</label>
+                        <div className="control">
+                          <input className="input" type="text" placeholder="0" />
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                <div>
+                  <a onClick={() => {
+                    this.vstore.toggleCalldata()
+                  }}
+                  >
+                    <Caret showing={showCalldata} /> Call Data
+                  </a>
+
+                  {showCalldata &&
+                    <code className={`has-text-grey ${css.calldata}`}>
+                      {this.vstore.encodedABIcalldata}
+                    </code>
+                  }
+                </div>
               </div>
             }
           </div>
