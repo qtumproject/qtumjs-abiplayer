@@ -7,6 +7,12 @@ export interface IContractMethodHeaderTag {
   modifier?: string
 }
 
+const css = {
+  tag: {
+    marginRight: "5px",
+  },
+}
+
 export function ContractMethodHeader(props: {
   contract: IContractInfo,
   method: IABIMethod,
@@ -29,8 +35,9 @@ export function ContractMethodHeader(props: {
     <div className="content">
       <strong>{deployName}</strong> {contractName} <span className="tag">{methodName}</span>
 
+
       {props.tags && props.tags.map((tag) =>
-        <span key={tag.label} className={`tag is-pulled-right ${tag.modifier || ""}`}>
+        <span key={tag.label} style={css.tag} className={`tag is-pulled-right ${tag.modifier || ""}`}>
           {tag.label}
         </span>)}
 

@@ -62,6 +62,8 @@ export interface ISendLog {
 
   // 3. transaction confirmed
   tx?: IRPCGetTransactionResult
+
+  error?: Error
 }
 
 export class Store {
@@ -144,12 +146,18 @@ export class Store {
     // retrieve the mobx observable object
     const log = this.logs[0] as ISendLog
 
-    const receipt = await c.send(method, args)
-    log.isPendingAuthorization = false
-    log.receipt = receipt
+    try {
+      const receipt = await c.send(method, args)
+      log.isPendingAuthorization = false
 
-    await receipt.confirm(3, 3000, (newTx) => {
-      log.tx = newTx
-    })
+      log.receipt = receipt
+
+      await receipt.confirm(3, 3000, (newTx) => {
+        log.tx = newTx
+      })
+    } catch (err) {
+      log.error = err
+      log.isPendingAuthorization = false
+    }
   }
 }

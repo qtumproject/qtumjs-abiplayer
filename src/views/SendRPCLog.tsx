@@ -4,7 +4,7 @@ import * as React from "react"
 import * as copy from "copy-to-clipboard"
 
 import { ISendLog } from "../Store"
-import { ContractMethodHeader } from "./partials/ContractMethodHeader"
+import { ContractMethodHeader, IContractMethodHeaderTag } from "./partials/ContractMethodHeader"
 
 const txShowKeys = [
   "confirmations",
@@ -48,6 +48,8 @@ export class SendRPCLog extends React.Component<{
       args,
       tx,
       receipt,
+      isPendingAuthorization,
+      error,
     } = this.props.sendlog
 
     const method = contract.abi.find((abiMethod) => abiMethod.name === methodName)
@@ -61,18 +63,38 @@ export class SendRPCLog extends React.Component<{
     const hasArgs = method.inputs.length > 0
     // const hasOutputs = result.outputs.length > 0
 
-    const tag = {
-      label: "send",
-      modifier: "is-link",
+    const tags: IContractMethodHeaderTag[] = []
+
+    if (isPendingAuthorization) {
+      tags.push({
+        label: "waiting authorization",
+        modifier: "is-warning",
+      })
+    } else {
+      tags.push({
+        label: "send",
+      })
+    }
+
+    if (error) {
+      tags.push({
+        label: "error",
+        modifier: "is-danger",
+      })
     }
 
     return (
       <div className="box content">
-        <ContractMethodHeader contract={contract} method={method} tags={[tag]} />
+        <ContractMethodHeader contract={contract} method={method} tags={tags} />
+
+        {error &&
+          <p className="has-text-danger	">{error.message}</p>
+        }
+
         {tx &&
           <div>
             <h4>Transaction</h4>
-            <table>
+            <table><tbody>
               <tr>
                 <td>txid</td>
                 <td>
@@ -90,6 +112,16 @@ export class SendRPCLog extends React.Component<{
                 </tr>
               }
 
+              {
+                receipt &&
+                <tr>
+                  <td>sender</td>
+                  <td>
+                    <ShortenHash hash={receipt.sender} n={6} />
+                  </td>
+                </tr>
+              }
+
               {txShowKeys.map((key) => {
                 let val = (tx as any)[key]
                 if (val === 0 || val === "") {
@@ -101,34 +133,38 @@ export class SendRPCLog extends React.Component<{
                 }
 
                 return (
-                  <tr>
+                  <tr key={key}>
                     <td>{key}</td>
                     <td>{val}</td>
                   </tr>
                 )
               })}
-            </table>
+            </tbody></table>
           </div>
         }
+
+        <br />
 
         {hasArgs &&
           <div>
             <h4>Inputs</h4>
             <table className="table is-bordered">
-              {args.map((val, i) => {
-                const {
-                  name,
-                  type,
-                } = method.inputs[i]
+              <tbody>
+                {args.map((val, i) => {
+                  const {
+                    name,
+                    type,
+                  } = method.inputs[i]
 
-                return (
-                  <tr>
-                    <td>{name}</td>
-                    <td>{type}</td>
-                    <td className="has-text-right">{val.toString()}</td>
-                  </tr>
-                )
-              })}
+                  return (
+                    <tr key={name}>
+                      <td>{name}</td>
+                      <td>{type}</td>
+                      <td className="has-text-right">{val.toString()}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
             </table>
           </div>
         }
