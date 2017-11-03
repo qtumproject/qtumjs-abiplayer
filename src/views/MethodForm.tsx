@@ -1,6 +1,6 @@
 import { autorun, toJS } from "mobx"
 import { inject, observer } from "mobx-react"
-import { IABIMethod, IContractInfo } from "qtumjs"
+import { IABIMethod, IContractInfo, IContractSendRequestOptions } from "qtumjs"
 import * as React from "react"
 
 import { Store } from "../Store"
@@ -92,7 +92,10 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
             <div className="field">
               <label className="label">Value</label>
               <div className="control">
-                <input className="input" type="text" placeholder="0" />
+                <input className="input" type="number" placeholder="0"
+                  onChange={(e) => {
+                    this.vstore.value = e.target.valueAsNumber
+                  }} />
               </div>
             </div>
           }
@@ -156,7 +159,7 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
 
                 <div>
                   <a onClick={() => {
-                    this.vstore.toggleCalldata()
+                    this.vstore.showCalldata = !this.vstore.showCalldata
                   }}
                   >
                     <Caret showing={showCalldata} /> Call Data
@@ -197,7 +200,11 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
               </span>
               <button className="button is-medium is-success is-fullwidth"
                 onClick={() => {
-                  rpcSend(this.props.contract, methodName, this.vstore.paramValues)
+                  const opts: IContractSendRequestOptions = {}
+                  if (payable && this.vstore.value > 0) {
+                    opts.amount = this.vstore.value
+                  }
+                  rpcSend(this.props.contract, methodName, this.vstore.paramValues, opts)
                   hideModal()
                 }}
                 disabled={!!calldataEncodeError}

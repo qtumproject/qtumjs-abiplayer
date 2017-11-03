@@ -128,7 +128,7 @@ export class SendRPCLog extends React.Component<{
                   return null
                 }
 
-                if (key === "fee") {
+                if (key === "fee" || key === "amount") {
                   val = Math.abs(val)
                 }
 

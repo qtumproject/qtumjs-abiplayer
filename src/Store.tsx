@@ -5,6 +5,7 @@ import {
   ContractSendReceipt,
   IContractCallDecodedResult,
   IContractInfo,
+  IContractSendRequestOptions,
   IRPCGetTransactionResult,
   IRPCSendToContractResult,
   QtumRPC,
@@ -109,7 +110,11 @@ export class Store {
     this.modalRenderFunction = undefined
   }
 
-  public rpcCall = async (contract: IContractInfo, method: string, args: any[]) => {
+  public rpcCall = async (
+    contract: IContractInfo,
+    method: string,
+    args: any[],
+  ) => {
     const c = new Contract(rpc, contract)
 
     const result = await c.call(method, args)
@@ -125,7 +130,12 @@ export class Store {
     this.logs.unshift(calllog)
   }
 
-  public rpcSend = async (contract: IContractInfo, method: string, args: any[]) => {
+  public rpcSend = async (
+    contract: IContractInfo,
+    method: string,
+    args: any[],
+    opts: IContractSendRequestOptions = {},
+  ) => {
     const c = new Contract(rpc, contract)
 
     const sendLog: ISendLog = {
@@ -147,7 +157,7 @@ export class Store {
     const log = this.logs[0] as ISendLog
 
     try {
-      const receipt = await c.send(method, args)
+      const receipt = await c.send(method, args, opts)
       log.isPendingAuthorization = false
 
       log.receipt = receipt

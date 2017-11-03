@@ -3,6 +3,8 @@ import { encodeInputs, IABIMethod } from "qtumjs"
 
 export class MethodFormStore {
   @observable public inputs: Map<string, string> = new Map()
+  @observable public value: number
+
   @observable.ref public method: IABIMethod
 
   @observable public showCalldata = false
