@@ -124,38 +124,40 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
 
             {!calldataEncodeError &&
               <div>
-                <div>
-                  <a
-                    onClick={() => {
-                      this.vstore.showSettings = !showSettings
-                    }}
-                  > <Caret showing={showSettings} /> Settings </a>
+                {!constant &&
+                  <div>
+                    <a
+                      onClick={() => {
+                        this.vstore.showSettings = !showSettings
+                      }}
+                    > <Caret showing={showSettings} /> Settings </a>
 
-                  {showSettings &&
-                    <div>
-                      <div className="field">
-                        <label className="label">Gas Price</label>
-                        <div className="control">
-                          <input className="input" type="text" placeholder="default: 0.00000001" />
+                    {showSettings &&
+                      <div>
+                        <div className="field">
+                          <label className="label">Gas Price</label>
+                          <div className="control">
+                            <input className="input" type="text" placeholder="default: 0.00000001" />
+                          </div>
+                        </div>
+
+                        <div className="field">
+                          <label className="label">Gas Limit</label>
+                          <div className="control">
+                            <input className="input" type="text" placeholder="default: 200000" />
+                          </div>
+                        </div>
+
+                        <div className="field">
+                          <label className="label">Sender</label>
+                          <div className="control">
+                            <input className="input" type="text" placeholder="0" />
+                          </div>
                         </div>
                       </div>
-
-                      <div className="field">
-                        <label className="label">Gas Limit</label>
-                        <div className="control">
-                          <input className="input" type="text" placeholder="default: 200000" />
-                        </div>
-                      </div>
-
-                      <div className="field">
-                        <label className="label">Sender</label>
-                        <div className="control">
-                          <input className="input" type="text" placeholder="0" />
-                        </div>
-                      </div>
-                    </div>
-                  }
-                </div>
+                    }
+                  </div>
+                }
 
                 <div>
                   <a onClick={() => {
