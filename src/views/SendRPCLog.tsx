@@ -5,6 +5,7 @@ import * as copy from "copy-to-clipboard"
 
 import { ISendLog } from "../Store"
 import { ContractMethodHeader, IContractMethodHeaderTag } from "./partials/ContractMethodHeader"
+import { Spinner } from "./Spinner"
 
 const txShowKeys = [
   "confirmations",
@@ -65,6 +66,8 @@ export class SendRPCLog extends React.Component<{
 
     const tags: IContractMethodHeaderTag[] = []
 
+    const hasOneConfirm = tx && tx.blockhash !== undefined
+
     if (isPendingAuthorization) {
       tags.push({
         label: "waiting authorization",
@@ -93,7 +96,7 @@ export class SendRPCLog extends React.Component<{
 
         {tx &&
           <div>
-            <h4>Transaction</h4>
+            <h4>Transaction {!hasOneConfirm && <Spinner />} </h4>
             <table><tbody>
               <tr>
                 <td>txid</td>

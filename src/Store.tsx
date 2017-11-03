@@ -13,6 +13,8 @@ import {
 
 import { IContractsInventory } from "./types"
 
+const NCONFIRM = 3
+
 export type ModalRenderFunction = () => JSX.Element
 
 async function readFileAsString(file: File): Promise<string> {
@@ -162,7 +164,7 @@ export class Store {
 
       log.receipt = receipt
 
-      await receipt.confirm(3, 3000, (newTx) => {
+      await receipt.confirm(NCONFIRM, 3000, (newTx) => {
         log.tx = newTx
       })
     } catch (err) {
