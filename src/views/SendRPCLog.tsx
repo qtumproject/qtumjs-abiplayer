@@ -195,8 +195,6 @@ export class SendRPCLog extends React.Component<{
 
     const method = contract.abi.find((abiMethod) => abiMethod.name === methodName)
 
-    console.log(method!.inputs)
-
     if (!method) {
       return <div>method not found</div>
     }
