@@ -2,7 +2,9 @@ import { observer } from "mobx-react"
 import * as React from "react"
 
 import {
+  ConfirmedTransaction,
   IABIMethod,
+  IDecodedLog,
   IRPCGetTransactionReceiptResult,
   IRPCGetTransactionResult,
 } from "qtumjs"
@@ -127,9 +129,9 @@ function Inputs(props: {
 }
 
 function Tx(props: {
-  tx: IRPCGetTransactionResult,
+  tx: ConfirmedTransaction,
 }) {
-  const { tx } = props
+  const { tx } = props.tx
 
   const hasOneConfirm = tx && tx.blockhash !== undefined
 
@@ -176,24 +178,72 @@ function Tx(props: {
   )
 }
 
+function LogItem(props: { log: IDecodedLog }) {
+  const {
+    log,
+  } = props
+
+  const {
+    type,
+  } = log
+
+  return (
+    <table><tbody>
+      <tr>
+        <td>type</td>
+        <td>{type}</td>
+      </tr>
+
+      {Object.keys(log).map((key) => {
+        if (key === "type") {
+          return null
+        }
+
+        return (
+          <tr key={key}>
+            <td>{key}</td>
+            <td>{log[key]}</td>
+          </tr>
+        )
+      })}
+    </tbody></table>
+  )
+}
+
+function DecodedLogs(props: { logs: IDecodedLog[] }) {
+  const { logs } = props
+  return (
+    <div>
+      <h4>Event Logs</h4>
+      {logs.map((log, i) => <LogItem key={i} log={log} />)}
+    </div>
+  )
+}
+
 @observer
 export class SendRPCLog extends React.Component<{
   sendlog: ISendLog,
 }, {}> {
   public render() {
     const {
-      contract,
-      method: methodName,
-      args,
-      tx,
+      // contract,
+      // method: methodName,
+      // args,
       txPromise,
+      tx,
+
       isPendingAuthorization,
       error,
     } = this.props.sendlog
 
-    const receipt = txPromise && txPromise.receipt
+    const {
+      contract,
+      methodABI: method,
+      params: args,
+    } = txPromise
 
-    const method = contract.abi.find((abiMethod) => abiMethod.name === methodName)
+    const receipt = tx && tx.receipt
+    const logs = tx && tx.logs
 
     if (!method) {
       return <div>method not found</div>
@@ -224,7 +274,7 @@ export class SendRPCLog extends React.Component<{
 
     return (
       <div className="box content">
-        <ContractMethodHeader contract={contract} method={method} tags={tags} />
+        <ContractMethodHeader contract={contract.info} method={method} tags={tags} />
 
         {hasArgs && <Inputs args={args} method={method} />}
 
@@ -237,6 +287,10 @@ export class SendRPCLog extends React.Component<{
         <br />
 
         {receipt && <Receipt receipt={receipt} />}
+
+        {logs && logs.length > 0 &&
+          <DecodedLogs logs={logs} />
+        }
 
         {
           // <code>

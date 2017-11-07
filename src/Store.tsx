@@ -1,6 +1,7 @@
 import { autorun, computed, observable, toJS } from "mobx"
 
 import {
+  ConfirmedTransaction,
   Contract,
   IContractCallDecodedResult,
   IContractInfo,
@@ -55,17 +56,13 @@ export interface ICallLog {
 
 export interface ISendLog {
   type: "send"
-  // 1. req sent to authorization RPC proxy
-  contract: IContractInfo
-  method: string
-  args: any[]
+  // 1. req sent to authorization RPC proxy, pending authorization
   isPendingAuthorization: boolean
 
-  // 2. req authorized sent to qtumd
-  txPromise?: TransactionPromise
+  txPromise: TransactionPromise
 
-  // 3. transaction confirmed
-  tx?: IRPCGetTransactionResult
+  // 2. transaction confirmed
+  tx?: ConfirmedTransaction
 
   error?: Error
 }
@@ -141,15 +138,14 @@ export class Store {
   ) => {
     const c = new Contract(rpc, contract)
 
+    const txPromise = c.send(method, args, opts)
+
     const sendLog: ISendLog = {
       type: "send",
-      contract,
-      method,
-      args,
       isPendingAuthorization: true,
+      txPromise,
 
-      // these two properties will be set asynchronously
-      txPromise: undefined,
+      // tx is set when transaction had been confirmed
       tx: undefined,
     }
 
@@ -160,10 +156,9 @@ export class Store {
     const log = this.logs[0] as ISendLog
 
     try {
-      const txPromise = await c.send(method, args, opts)
-      log.isPendingAuthorization = false
+      await txPromise.exec()
 
-      log.txPromise = txPromise
+      log.isPendingAuthorization = false
 
       await txPromise.confirm(NCONFIRM, 3000, (newTx) => {
         log.tx = newTx
