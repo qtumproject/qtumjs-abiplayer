@@ -178,9 +178,13 @@ function Tx(props: {
   )
 }
 
-function LogItem(props: { log: IDecodedLog }) {
+function LogItem(props: {
+  log: IDecodedLog,
+  method: IABIMethod,
+}) {
   const {
     log,
+    method,
   } = props
 
   const {
@@ -188,10 +192,10 @@ function LogItem(props: { log: IDecodedLog }) {
   } = log
 
   return (
-    <table><tbody>
+    <table className="table is-bordered"><tbody>
       <tr>
         <td>type</td>
-        <td>{type}</td>
+        <td colSpan={2}>{type}</td>
       </tr>
 
       {Object.keys(log).map((key) => {
@@ -199,10 +203,21 @@ function LogItem(props: { log: IDecodedLog }) {
           return null
         }
 
+        const input = method.inputs.find((_input) => _input.name === key)!
+
+        let val = log[key]
+
+        // if (val instanceof BN) {
+        // check for BN... instanceof doesn't work (different version of npm required here?)
+        if (val.toNumber) {
+          val = val.toNumber()
+        }
+
         return (
           <tr key={key}>
             <td>{key}</td>
-            <td>{log[key]}</td>
+            <td>{input.type}</td>
+            <td>{val}</td>
           </tr>
         )
       })}
@@ -210,12 +225,21 @@ function LogItem(props: { log: IDecodedLog }) {
   )
 }
 
-function DecodedLogs(props: { logs: IDecodedLog[] }) {
-  const { logs } = props
+function DecodedLogs(props: {
+  logs: IDecodedLog[],
+  methods: IABIMethod[],
+}) {
+  const {
+    logs,
+    methods,
+  } = props
   return (
     <div>
       <h4>Event Logs</h4>
-      {logs.map((log, i) => <LogItem key={i} log={log} />)}
+      {logs.map((log, i) => {
+        const eventABI = methods.find((method) => method.name === log.type)!
+        return <LogItem key={i} log={log} method={eventABI} />
+      })}
     </div>
   )
 }
@@ -289,7 +313,7 @@ export class SendRPCLog extends React.Component<{
         {receipt && <Receipt receipt={receipt} />}
 
         {logs && logs.length > 0 &&
-          <DecodedLogs logs={logs} />
+          <DecodedLogs logs={logs} methods={contract.info.abi} />
         }
 
         {
