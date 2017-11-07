@@ -129,8 +129,17 @@ function Inputs(props: {
 }
 
 function Tx(props: {
-  tx: ConfirmedTransaction,
+  tx?: ConfirmedTransaction,
 }) {
+  if (!props.tx) {
+    return (
+      <div>
+        <h4>Transaction</h4>
+        <Spinner />
+      </div>
+    )
+  }
+
   const { tx } = props.tx
 
   const hasOneConfirm = tx && tx.blockhash !== undefined
@@ -306,7 +315,7 @@ export class SendRPCLog extends React.Component<{
           <p className="has-text-danger	">{error.message}</p>
         }
 
-        {tx && <Tx tx={tx} />}
+        <Tx tx={tx} />
 
         <br />
 
