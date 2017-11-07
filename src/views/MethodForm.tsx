@@ -137,21 +137,35 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
                         <div className="field">
                           <label className="label">Gas Price</label>
                           <div className="control">
-                            <input className="input" type="text" placeholder="default: 0.00000001" />
+                            <input className="input" type="number"
+                              placeholder="default: 0.00000001"
+                              onChange={(e) => {
+                                this.vstore.gasPrice = e.target.valueAsNumber
+                              }} />
                           </div>
                         </div>
 
                         <div className="field">
                           <label className="label">Gas Limit</label>
                           <div className="control">
-                            <input className="input" type="text" placeholder="default: 200000" />
+                            <input className="input"
+                              type="number"
+                              placeholder="default: 200000"
+                              onChange={(e) => {
+                                this.vstore.gasLimit = e.target.valueAsNumber
+                              }}
+                            />
                           </div>
                         </div>
 
                         <div className="field">
                           <label className="label">Sender</label>
                           <div className="control">
-                            <input className="input" type="text" placeholder="0" />
+                            <input className="input" type="text" placeholder="0"
+                              onChange={(e) => {
+                                this.vstore.sender = e.target.value.trim()
+                              }}
+                            />
                           </div>
                         </div>
                       </div>
@@ -202,11 +216,32 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
               </span>
               <button className="button is-medium is-success is-fullwidth"
                 onClick={() => {
+                  const {
+                    value,
+                    gasLimit,
+                    gasPrice,
+                    sender,
+                  } = this.vstore
                   const opts: IContractSendRequestOptions = {}
+
                   if (payable && this.vstore.value > 0) {
                     opts.amount = this.vstore.value
                   }
+
+                  if (gasLimit && gasLimit > 0) {
+                    opts.gasLimit = gasLimit
+                  }
+
+                  if (gasPrice && gasPrice > 0) {
+                    opts.gasPrice = gasPrice
+                  }
+
+                  if (sender && sender !== "") {
+                    opts.senderAddress = sender
+                  }
+
                   rpcSend(this.props.contract, methodName, this.vstore.paramValues, opts)
+
                   hideModal()
                 }}
                 disabled={!!calldataEncodeError}

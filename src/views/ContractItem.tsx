@@ -22,7 +22,7 @@ export const ContractItem = observer((props: {
     abi,
   } = props.contract
 
-  const methods = abi.filter((method) => method.name !== "")
+  const methods = abi.filter((method) => method.name !== "" && method.type !== "event")
 
   const noMethod = methods.length === 0
 

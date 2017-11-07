@@ -2,13 +2,14 @@ import { autorun, computed, observable, toJS } from "mobx"
 
 import {
   Contract,
-  ContractSendReceipt,
   IContractCallDecodedResult,
   IContractInfo,
   IContractSendRequestOptions,
+  IRPCGetTransactionReceiptResult,
   IRPCGetTransactionResult,
   IRPCSendToContractResult,
   QtumRPC,
+  TransactionPromise,
 } from "qtumjs"
 
 import { IContractsInventory } from "./types"
@@ -61,7 +62,7 @@ export interface ISendLog {
   isPendingAuthorization: boolean
 
   // 2. req authorized sent to qtumd
-  receipt?: ContractSendReceipt
+  txPromise?: TransactionPromise
 
   // 3. transaction confirmed
   tx?: IRPCGetTransactionResult
@@ -148,7 +149,7 @@ export class Store {
       isPendingAuthorization: true,
 
       // these two properties will be set asynchronously
-      receipt: undefined,
+      txPromise: undefined,
       tx: undefined,
     }
 
@@ -159,12 +160,12 @@ export class Store {
     const log = this.logs[0] as ISendLog
 
     try {
-      const receipt = await c.send(method, args, opts)
+      const txPromise = await c.send(method, args, opts)
       log.isPendingAuthorization = false
 
-      log.receipt = receipt
+      log.txPromise = txPromise
 
-      await receipt.confirm(NCONFIRM, 3000, (newTx) => {
+      await txPromise.confirm(NCONFIRM, 3000, (newTx) => {
         log.tx = newTx
       })
     } catch (err) {
