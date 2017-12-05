@@ -2,11 +2,11 @@ import { observer } from "mobx-react"
 import * as React from "react"
 
 import {
-  ConfirmedTransaction,
   IABIMethod,
   IDecodedLog,
   IRPCGetTransactionReceiptResult,
   IRPCGetTransactionResult,
+  IContractSendTxReceipt,
 } from "qtumjs"
 
 import * as copy from "copy-to-clipboard"
@@ -49,14 +49,14 @@ function ShortenHash(props: {
 // TODO refactor with functional components
 
 function Receipt(props: {
-  receipt: IRPCGetTransactionReceiptResult,
+  receipt: IContractSendTxReceipt,
 }) {
   const {
     blockNumber,
     gasUsed,
     transactionIndex,
     from,
-    log,
+    logs,
   } = props.receipt
 
   return (
@@ -129,7 +129,7 @@ function Inputs(props: {
 }
 
 function Tx(props: {
-  tx?: ConfirmedTransaction,
+  tx?: IRPCGetTransactionResult,
 }) {
   if (!props.tx) {
     return (
@@ -140,7 +140,7 @@ function Tx(props: {
     )
   }
 
-  const { tx } = props.tx
+  const tx = props.tx
 
   const hasOneConfirm = tx && tx.blockhash !== undefined
 
@@ -259,24 +259,19 @@ export class SendRPCLog extends React.Component<{
 }, {}> {
   public render() {
     const {
-      // contract,
-      // method: methodName,
-      // args,
-      txPromise,
+      contract,
+      method: methodName,
+      args,
+      receipt,
       tx,
 
       isPendingAuthorization,
       error,
     } = this.props.sendlog
 
-    const {
-      contract,
-      methodABI: method,
-      params: args,
-    } = txPromise
+    const logs = receipt && receipt.logs
 
-    const receipt = tx && tx.receipt
-    const logs = tx && tx.logs
+    const method = contract.abi.find((_method) => _method.name === methodName)
 
     if (!method) {
       return <div>method not found</div>
@@ -307,7 +302,7 @@ export class SendRPCLog extends React.Component<{
 
     return (
       <div className="box content">
-        <ContractMethodHeader contract={contract.info} method={method} tags={tags} />
+        <ContractMethodHeader contract={contract} method={method} tags={tags} />
 
         {hasArgs && <Inputs args={args} method={method} />}
 
@@ -322,7 +317,7 @@ export class SendRPCLog extends React.Component<{
         {receipt && <Receipt receipt={receipt} />}
 
         {logs && logs.length > 0 &&
-          <DecodedLogs logs={logs} methods={contract.info.abi} />
+          <DecodedLogs logs={logs} methods={contract.abi} />
         }
 
         {

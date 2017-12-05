@@ -1,16 +1,17 @@
 import { autorun, computed, observable, toJS } from "mobx"
 
 import {
-  ConfirmedTransaction,
   Contract,
   IContractCallDecodedResult,
   IContractInfo,
   IContractSendRequestOptions,
+  IContractSendTxConfirmable,
+  IContractSendTxReceipt,
   IRPCGetTransactionReceiptResult,
   IRPCGetTransactionResult,
+
   IRPCSendToContractResult,
   QtumRPC,
-  TransactionPromise,
 } from "qtumjs"
 
 import { IContractsInventory } from "./types"
@@ -56,13 +57,14 @@ export interface ICallLog {
 
 export interface ISendLog {
   type: "send"
-  // 1. req sent to authorization RPC proxy, pending authorization
+  contract: IContractInfo
+  method: string
+  args: any[]
+
   isPendingAuthorization: boolean
 
-  txPromise: TransactionPromise
-
-  // 2. transaction confirmed
-  tx?: ConfirmedTransaction
+  tx?: IRPCGetTransactionResult
+  receipt?: IContractSendTxReceipt
 
   error?: Error
 }
@@ -75,11 +77,9 @@ export class Store {
   @observable public logs: Array<ICallLog | ISendLog> = []
 
   constructor() {
-    autorun(() => {
-      console.log("logs", toJS(this.logs))
-    })
-
-    this.logs.push(require("../example.sendlog.json"))
+    // autorun(() => {
+    //   console.log("logs", toJS(this.logs))
+    // })
   }
 
   @computed
@@ -138,15 +138,15 @@ export class Store {
   ) => {
     const c = new Contract(rpc, contract)
 
-    const txPromise = c.send(method, args, opts)
-
     const sendLog: ISendLog = {
       type: "send",
-      isPendingAuthorization: true,
-      txPromise,
+      contract,
+      method,
+      args,
 
-      // tx is set when transaction had been confirmed
+      isPendingAuthorization: true,
       tx: undefined,
+      receipt: undefined,
     }
 
     // when added to `logs` (an observable array), `sendlog` will be converted to an observable object
@@ -156,12 +156,14 @@ export class Store {
     const log = this.logs[0] as ISendLog
 
     try {
-      await txPromise.exec()
+      const tx = await c.send(method, args, opts)
 
+      log.tx = tx
       log.isPendingAuthorization = false
 
-      await txPromise.confirm(NCONFIRM, 3000, (newTx) => {
-        log.tx = newTx
+      tx.confirm(3, (tx_, receipt_) => {
+        log.tx = tx_
+        log.receipt = receipt_
       })
     } catch (err) {
       log.error = err
