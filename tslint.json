@@ -17,7 +17,9 @@
             "allow-leading-underscore",
             "allow-pascal-case",
             "allow-trailing-underscore"
-        ]
+        ],
+
+        "ordered-imports": false
     },
     "rulesDirectory": []
 }
