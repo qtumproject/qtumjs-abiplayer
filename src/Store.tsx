@@ -2,6 +2,7 @@ import { autorun, computed, observable, toJS } from "mobx"
 
 import {
   Contract,
+  IContractCallRequestOptions,
   IContractCallDecodedResult,
   IDeployedContractInfo,
   IContractSendRequestOptions,
@@ -115,10 +116,11 @@ export class Store {
     contract: IDeployedContractInfo,
     method: string,
     args: any[],
+    opts: IContractCallRequestOptions = {},
   ) => {
     const c = new Contract(rpc, contract)
 
-    const result = await c.call(method, args)
+    const result = await c.call(method, args, opts)
 
     const calllog: ICallLog = {
       type: "call",

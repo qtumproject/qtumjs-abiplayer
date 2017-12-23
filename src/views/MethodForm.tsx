@@ -46,7 +46,7 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
   constructor(props: IMethodFormProps) {
     super(props)
 
-    const store = new MethodFormStore(props.method)
+    const store = new MethodFormStore(props.contract, props.method)
     this.vstore = store
   }
 
@@ -161,7 +161,7 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
                         <div className="field">
                           <label className="label">Sender</label>
                           <div className="control">
-                            <input className="input" type="text" placeholder="0"
+                            <input className="input" type="text" placeholder={this.vstore.senderAddress || "0"}
                               onChange={(e) => {
                                 this.vstore.sender = e.target.value.trim()
                               }}
@@ -199,7 +199,7 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
             </span>
             <button className="button is-medium is-fullwidth"
               onClick={() => {
-                rpcCall(this.props.contract, methodName, this.vstore.paramValues)
+                this.contractCall()
                 hideModal()
               }}
               disabled={!!calldataEncodeError}
@@ -216,32 +216,7 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
               </span>
               <button className="button is-medium is-success is-fullwidth"
                 onClick={() => {
-                  const {
-                    value,
-                    gasLimit,
-                    gasPrice,
-                    sender,
-                  } = this.vstore
-                  const opts: IContractSendRequestOptions = {}
-
-                  if (payable && this.vstore.value > 0) {
-                    opts.amount = this.vstore.value
-                  }
-
-                  if (gasLimit && gasLimit > 0) {
-                    opts.gasLimit = gasLimit
-                  }
-
-                  if (gasPrice && gasPrice > 0) {
-                    opts.gasPrice = gasPrice
-                  }
-
-                  if (sender && sender !== "") {
-                    opts.senderAddress = sender
-                  }
-
-                  rpcSend(this.props.contract, methodName, this.vstore.paramValues, opts)
-
+                  this.contractSend()
                   hideModal()
                 }}
                 disabled={!!calldataEncodeError}
@@ -253,6 +228,21 @@ export class MethodForm extends React.Component<IMethodFormProps, {}> {
         </div>
       </div>
     )
+  }
+
+  public contractCall() {
+    const { name: methodName } = this.props.method
+    const { rpcCall } = this.props.store
+
+    rpcCall(this.props.contract, methodName, this.vstore.paramValues, this.vstore.callOptions)
+  }
+
+  public contractSend() {
+    const { name: methodName } = this.props.method
+    const { rpcSend } = this.props.store
+
+    const opts = this.vstore.sendOptions
+    rpcSend(this.props.contract, methodName, this.vstore.paramValues, opts)
   }
 
   public onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
