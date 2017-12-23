@@ -1,6 +1,6 @@
 import { autorun, toJS } from "mobx"
 import { inject, observer } from "mobx-react"
-import { IABIMethod, IContractInfo, IContractSendRequestOptions } from "qtumjs"
+import { IABIMethod, IDeployedContractInfo, IContractSendRequestOptions } from "qtumjs"
 import * as React from "react"
 
 import { Store } from "../Store"
@@ -26,7 +26,7 @@ function MethodParam(props: {
 }
 
 interface IMethodFormProps {
-  contract: IContractInfo
+  contract: IDeployedContractInfo
   method: IABIMethod
 
   // injected store

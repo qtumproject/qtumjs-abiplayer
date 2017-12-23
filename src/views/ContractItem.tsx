@@ -1,5 +1,5 @@
 import { inject, observer } from "mobx-react"
-import { IABIMethod, IContractInfo } from "qtumjs"
+import { IABIMethod, IDeployedContractInfo } from "qtumjs"
 import * as React from "react"
 
 import { Store } from "../Store"
@@ -8,7 +8,7 @@ import { MethodForm } from "./MethodForm"
 const css = require("./ContractItem.css")
 
 export const ContractItem = observer((props: {
-  contract: IContractInfo,
+  contract: IDeployedContractInfo,
   store: Store,
 }) => {
   const {

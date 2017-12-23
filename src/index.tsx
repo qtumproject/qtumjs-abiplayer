@@ -19,8 +19,8 @@ Object.assign(window, {
 window.addEventListener("load", () => {
   const store = new Store()
 
-  const inventory: IContractsInventory = require("../solar.development.json")
-  store.setInventory(inventory)
+  // const inventory: IContractsInventory = require("../solar.development.json")
+  // store.setInventory(inventory)
 
   // store.
   render(

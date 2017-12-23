@@ -3,7 +3,7 @@ import { autorun, computed, observable, toJS } from "mobx"
 import {
   Contract,
   IContractCallDecodedResult,
-  IContractInfo,
+  IDeployedContractInfo,
   IContractSendRequestOptions,
   IContractSendTxConfirmable,
   IContractSendTxReceipt,
@@ -49,7 +49,7 @@ const rpc = new QtumRPC("http://localhost:9888")
 
 export interface ICallLog {
   type: "call"
-  contract: IContractInfo
+  contract: IDeployedContractInfo
   method: string
   args: any[]
   result: IContractCallDecodedResult
@@ -57,7 +57,7 @@ export interface ICallLog {
 
 export interface ISendLog {
   type: "send"
-  contract: IContractInfo
+  contract: IDeployedContractInfo
   method: string
   args: any[]
 
@@ -71,7 +71,7 @@ export interface ISendLog {
 
 export class Store {
   @observable public contractsInventoryJSONFile?: File
-  @observable.ref public inventory: IContractsInventory = {}
+  @observable.ref public inventory: IContractsInventory = { contracts: {} }
   @observable.ref public modalRenderFunction?: ModalRenderFunction
 
   @observable public logs: Array<ICallLog | ISendLog> = []
@@ -83,8 +83,9 @@ export class Store {
   }
 
   @computed
-  public get contracts(): IContractInfo[] {
-    return Object.keys(this.inventory).map((key) => this.inventory[key])
+  public get contracts(): IDeployedContractInfo[] {
+    const contracts = this.inventory.contracts
+    return Object.keys(contracts).map((key) => contracts[key])
   }
 
   public async useContractsInventoryJSONFile(file: File) {
@@ -111,7 +112,7 @@ export class Store {
   }
 
   public rpcCall = async (
-    contract: IContractInfo,
+    contract: IDeployedContractInfo,
     method: string,
     args: any[],
   ) => {
@@ -131,7 +132,7 @@ export class Store {
   }
 
   public rpcSend = async (
-    contract: IContractInfo,
+    contract: IDeployedContractInfo,
     method: string,
     args: any[],
     opts: IContractSendRequestOptions = {},

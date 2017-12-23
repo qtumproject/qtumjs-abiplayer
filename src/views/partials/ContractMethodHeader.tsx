@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { IABIMethod, IContractInfo } from "qtumjs"
+import { IABIMethod, IDeployedContractInfo } from "qtumjs"
 
 export interface IContractMethodHeaderTag {
   label: string
@@ -14,7 +14,7 @@ const css = {
 }
 
 export function ContractMethodHeader(props: {
-  contract: IContractInfo,
+  contract: IDeployedContractInfo,
   method: IABIMethod,
   tags?: IContractMethodHeaderTag[],
 }) {
@@ -34,7 +34,6 @@ export function ContractMethodHeader(props: {
   return (
     <div className="content">
       <strong>{deployName}</strong> {contractName} <span className="tag">{methodName}</span>
-
 
       {props.tags && props.tags.map((tag) =>
         <span key={tag.label} style={css.tag} className={`tag is-pulled-right ${tag.modifier || ""}`}>
