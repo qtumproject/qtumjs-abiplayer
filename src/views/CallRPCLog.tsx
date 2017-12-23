@@ -41,7 +41,7 @@ export class CallRPCLog extends React.Component<{
       <div className="box content">
         <ContractMethodHeader contract={contract} method={method} tags={[tag]} />
         <h4>Execution Result</h4>
-        <table>
+        <table><tbody>
           {executionResultShowKeys.map((key) => {
             const val = (result.executionResult as any)[key]
             if (val === 0 || val === "") {
@@ -53,18 +53,18 @@ export class CallRPCLog extends React.Component<{
             }
 
             return (
-              <tr>
+              <tr key={key}>
                 <td>{key}</td>
                 <td>{val}</td>
               </tr>
             )
           })}
-        </table>
+        </tbody></table>
 
         {hasArgs &&
           <div>
             <h4>Inputs</h4>
-            <table className="table is-bordered">
+            <table className="table is-bordered"><tbody>
               {args.map((val, i) => {
                 const {
                   name,
@@ -72,34 +72,34 @@ export class CallRPCLog extends React.Component<{
                 } = method.inputs[i]
 
                 return (
-                  <tr>
+                  <tr key={i}>
                     <td>{name}</td>
                     <td>{type}</td>
                     <td className="has-text-right">{val.toString()}</td>
                   </tr>
                 )
               })}
-            </table>
+            </tbody></table>
           </div>
         }
 
         {hasOutputs &&
           <div>
             <h4>Outputs</h4>
-            <table className="table is-bordered">
+            <table className="table is-bordered"><tbody>
               {result.outputs.map((val, i) => {
                 const {
                   type,
                 } = method.outputs[i]
 
                 return (
-                  <tr>
+                  <tr key={i}>
                     <td>{type}</td>
                     <td className="has-text-right">{val.toString()}</td>
                   </tr>
                 )
               })}
-            </table>
+            </tbody></table>
           </div>
         }
       </div>
