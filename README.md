@@ -44,8 +44,6 @@ For development purposes, run qtumd in regtest mode:
 docker run -it --rm \
   --name myapp \
   -v `pwd`:/dapp \
-  -p 9899:9899 \
-  -p 9888:9888 \
   -p 3889:3889 \
   hayeah/qtumportal
 ```
