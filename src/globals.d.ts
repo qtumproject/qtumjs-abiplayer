@@ -1,0 +1,1 @@
+declare const QTUM_RPC: string

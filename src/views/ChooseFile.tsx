@@ -1,7 +1,7 @@
 import { inject, observer } from "mobx-react"
 import * as React from "react"
 
-import { Store } from "../store"
+import { Store } from "../Store"
 
 @inject("store") @observer
 export class ChooseFile extends React.Component<{ store: Store }, {}> {
@@ -43,5 +43,4 @@ export class ChooseFile extends React.Component<{ store: Store }, {}> {
     this.props.store.useContractsInventoryJSONFile(file)
     // file.name
   }
-
 }

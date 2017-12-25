@@ -4,6 +4,7 @@ import * as React from "react"
 
 import { Store } from "../Store"
 import { MethodForm } from "./MethodForm"
+import { ContractMethodHeader } from "./partials/ContractMethodHeader"
 
 const css = require("./ContractItem.css")
 
@@ -30,11 +31,7 @@ export const ContractItem = observer((props: {
 
   return (
     <div className="box content">
-      <p>
-        <strong>{deployName}</strong> {name}
-        <br />
-        <span className={css.address}>{address}</span>
-      </p>
+      <ContractMethodHeader contract={props.contract}/>
 
       <p>
         {noMethod && "Contract has no method"}

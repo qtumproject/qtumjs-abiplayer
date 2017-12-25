@@ -7,7 +7,7 @@ import { Provider } from "mobx-react"
 import * as React from "react"
 import { render } from "react-dom"
 
-import { Store } from "./store"
+import { Store } from "./Store"
 import { IContractsInventory } from "./types"
 import { App } from "./views/App"
 

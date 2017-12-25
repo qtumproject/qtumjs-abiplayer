@@ -1,6 +1,7 @@
 import * as React from "react"
-
 import { IABIMethod, IDeployedContractInfo } from "qtumjs"
+
+import { ShortenHash } from "./ShortenHash"
 
 export interface IContractMethodHeaderTag {
   label: string
@@ -15,7 +16,7 @@ const css = {
 
 export function ContractMethodHeader(props: {
   contract: IDeployedContractInfo,
-  method: IABIMethod,
+  method?: IABIMethod,
   tags?: IContractMethodHeaderTag[],
 }) {
 
@@ -25,15 +26,9 @@ export function ContractMethodHeader(props: {
     address,
   } = props.contract
 
-  const {
-    name: methodName,
-    payable,
-    constant,
-  } = props.method
-
   return (
     <div className="content">
-      <strong>{deployName}</strong> {contractName} <span className="tag">{methodName}</span>
+      <strong>{contractName}</strong> { props.method && <span className="tag">{props.method.name}</span>}
 
       {props.tags && props.tags.map((tag) =>
         <span key={tag.label} style={css.tag} className={`tag is-pulled-right ${tag.modifier || ""}`}>
@@ -41,7 +36,9 @@ export function ContractMethodHeader(props: {
         </span>)}
 
       <br />
-      <span className="is-size-7">{address}</span>
+      <span className="is-size-7">
+        {deployName} <span className="fa fa-long-arrow-right" /> <ShortenHash hash={address}/>
+      </span>
     </div>
   )
 }

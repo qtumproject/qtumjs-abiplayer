@@ -14,39 +14,13 @@ import * as copy from "copy-to-clipboard"
 import { ISendLog } from "../Store"
 import { ContractMethodHeader, IContractMethodHeaderTag } from "./partials/ContractMethodHeader"
 import { Spinner } from "./Spinner"
+import { ShortenHash } from "./partials/ShortenHash";
 
 const txShowKeys = [
   "confirmations",
   "fee",
   "amount",
 ]
-
-function ShortenHash(props: {
-  hash: string,
-  n?: number,
-}) {
-  const hash = props.hash
-  const n = props.n || 3
-
-  if (!hash) {
-    return null
-  }
-
-  const shorthash = hash.slice(0, n) + "..." + hash.slice(hash.length - n)
-
-  return (
-    <a onClick={() => {
-      copy(hash)
-    }}>
-      {shorthash}
-      <span className="icon">
-        <i className="fa fa-clipboard"></i>
-      </span>
-    </a>
-  )
-}
-
-// TODO refactor with functional components
 
 function Receipt(props: {
   receipt: IContractSendTxReceipt,
