@@ -22,7 +22,7 @@ export class App extends React.Component<{}, {}> {
         <nav className="navbar" role="navigation">
           <div className="navbar-brand">
             <span className="navbar-item">
-              QTUM ABI Explorer
+              QTUM ABI Player
             </span>
           </div>
         </nav>
